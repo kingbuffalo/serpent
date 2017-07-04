@@ -131,9 +131,36 @@ local function deserialize(data, opts)
   return pcall(f)
 end
 
+local function strNumKeyDump()
+	--此代码来自云风
+	--只能是number或string为key的table
+	local mark={}
+	local assign={}
+	local function ser_table(tbl,parent)
+		mark[tbl]=parent
+		local tmp={}
+		for k,v in pairs(tbl) do
+			local key= type(k)=="number" and "["..k.."]" or k
+			if type(v)=="table" then
+				local dotkey= parent..(type(k)=="number" and key or "."..key)
+				if mark[v] then
+					table.insert(assign,dotkey.."="..mark[v])
+				else
+					table.insert(tmp, key.."="..ser_table(v,dotkey))
+				end
+			else
+				table.insert(tmp, key.."="..v)
+			end
+		end
+		return "{"..table.concat(tmp,",").."}"
+	end
+	return "do local _="..ser_table(t,"_")..table.concat(assign," ").." return _ end"
+end
+
 local function merge(a, b) if b then for k,v in pairs(b) do a[k] = v end end; return a; end
 return { _NAME = n, _COPYRIGHT = c, _DESCRIPTION = d, _VERSION = v, serialize = s,
   load = deserialize,
+  strNumKeyDump=strNumKeyDump,
   dump = function(a, opts) return s(a, merge({name = '_', compact = true, sparse = true}, opts)) end,
   line = function(a, opts) return s(a, merge({sortkeys = true, comment = true}, opts)) end,
   block = function(a, opts) return s(a, merge({indent = '  ', sortkeys = true, comment = true}, opts)) end }
