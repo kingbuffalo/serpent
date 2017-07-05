@@ -9,6 +9,7 @@ Lua serializer and pretty printer.
 ```lua
 local serpent = require("serpent")
 local str = serpent.strNumKeyDump(luaTable)
+```
 
 ## Features
 
