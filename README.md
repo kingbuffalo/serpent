@@ -2,6 +2,14 @@
 
 Lua serializer and pretty printer.
 
+## 新加功能
+* 增加了以string 或 number 为key的dump
+## Usage
+
+```lua
+local serpent = require("serpent")
+local str = serpent.strNumKeyDump(luaTable)
+
 ## Features
 
 * Human readable:
