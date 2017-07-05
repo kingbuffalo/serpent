@@ -3,7 +3,7 @@
 Lua serializer and pretty printer.
 
 ## 新加功能
-* 增加了以string 或 number 为key的dump
+* 增加了以string 或 number 为key的dump ,速度比dump快一个数量级
 ## Usage
 
 ```lua
