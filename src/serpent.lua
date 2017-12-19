@@ -160,10 +160,26 @@ local function strNumKeyDump(t)
 	return "do local _="..ser_table(t,"_")..table.concat(assign," ").." return _ end"
 end
 
+local function strNumKeySimpleDump(t)
+	local function ser_table(tbl)
+		local tmp={}
+		for k,v in pairs(tbl) do
+			local key= type(k)=="number" and "["..k.."]" or k
+			if type(v)=="table" then tmp[#tmp+1] = key.."="..ser_table(v)
+			else if type(v) == "string" then tmp[#tmp+1] = key.."=\""..v.."\""
+				else tmp[#tmp+1] =  key.."="..v end
+			end
+		end
+		return "{"..table.concat(tmp,",").."}"
+	end
+	return "do local _="..ser_table(t,"_")..";return _ end"
+end
+
 local function merge(a, b) if b then for k,v in pairs(b) do a[k] = v end end; return a; end
 return { _NAME = n, _COPYRIGHT = c, _DESCRIPTION = d, _VERSION = v, serialize = s,
   load = deserialize,
-  strNumKeyDump=strNumKeyDump,
+  strNumKeyDump=strNumKeySimpleDump,
+  --strNumKeyDump=strNumKeyDump,
   --strNumKeyDump= function(a, opts) return s(a, merge({name = '_', compact = true, sparse = true}, opts)) end,
   dump = function(a, opts) return s(a, merge({name = '_', compact = true, sparse = true}, opts)) end,
   line = function(a, opts) return s(a, merge({sortkeys = true, comment = true}, opts)) end,
